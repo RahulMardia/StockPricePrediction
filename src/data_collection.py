@@ -12,6 +12,11 @@ BASE_URL = "https://www.alphavantage.co/query"
 def download_stock_data(symbol):
     print(f"Downloading data for {symbol}....")
 
+    if not API_KEY:
+        raise ValueError(
+            "API key missing. Check your .env file."
+        )
+    
     params = {
         "function":"TIME_SERIES_DAILY",
         "symbol": symbol,
@@ -19,17 +24,27 @@ def download_stock_data(symbol):
         "datatype":"json"
     }
 
-    response = requests.get(BASE_URL,params)
+    response = requests.get(BASE_URL,params,timeout=30)
     response.raise_for_status()
 
     data = response.json()
+    if "Error Message" in data:
+        raise ValueError(data["Error Message"])
 
-    if "Time Series (Daily)" not in data:
-        print("API Error:")
-        print(data)
-        return None
+    if "Note" in data:
+        raise ValueError(
+            f"API rate limit message: {data['Note']}"
+        )
 
-    time_series = data["Time Series (Daily)"]
+    if "Information" in data:
+        raise ValueError(data["Information"])
+
+    time_series = data.get("Time Series (Daily)")
+
+    if not time_series:
+        raise ValueError(
+            f"No stock data returned. Response: {data}"
+        )
 
     df = pd.DataFrame.from_dict(
         time_series,
@@ -40,7 +55,12 @@ def download_stock_data(symbol):
 
     df = df.sort_index()
 
+    df = df.reset_index()
+
+    df.rename(columns={"index": "Date"}, inplace=True)
+
     df.columns = [
+        "Date",
         "open",
         "high",
         "low",
@@ -62,4 +82,4 @@ def download_stock_data(symbol):
     return df
 
 if __name__ == "__main__":
-    download_stock_data("RELIANCE.BSE")
+    download_stock_data("AAPL")
