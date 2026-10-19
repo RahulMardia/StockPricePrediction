@@ -222,3 +222,19 @@ __marimo__/
 
 # Data
 src/data
+
+
+# Stock prediction project: generated data and artifacts
+data/raw/
+data/processed/
+
+# Trained model artifacts (optional)
+# Uncomment if you don't want to commit trained models
+# models/
+
+# Generated reports (optional)
+# Uncomment if you don't want to commit reports
+# reports/
+
+# Remove this if no data is stored inside src/data
+# src/data/
