@@ -21,7 +21,8 @@ def download_stock_data(symbol):
         "function":"TIME_SERIES_DAILY",
         "symbol": symbol,
         "apikey": API_KEY,
-        "datatype":"json"
+        "datatype":"json",
+        "outputsize": "full",
     }
 
     response = requests.get(BASE_URL,params,timeout=30)

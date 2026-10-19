@@ -58,7 +58,7 @@ def load_stock_data(filepath):
     if missing:
         raise ValueError(f"Missing columns: {missing}")
 
-    df["date"] = pd.to_datetime(df["date"])
+    df["date"] = pd.to_datetime(df["date"], utc=True)
 
     for col in ["open", "high", "low", "close", "volume"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
