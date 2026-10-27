@@ -1,0 +1,33 @@
+{
+    "validation": {
+        "Logistic Regression": {
+            "accuracy": 0.4751,
+            "precision": 0.507,
+            "recall": 0.375,
+            "f1": 0.4311,
+            "roc_auc": 0.4295
+        },
+        "Random Forest": {
+            "accuracy": 0.4641,
+            "precision": 0.4933,
+            "recall": 0.3854,
+            "f1": 0.4327,
+            "roc_auc": 0.4891
+        },
+        "XGBoost": {
+            "accuracy": 0.4751,
+            "precision": 0.5067,
+            "recall": 0.3958,
+            "f1": 0.4444,
+            "roc_auc": 0.4816
+        }
+    },
+    "selected_model": "Random Forest",
+    "test": {
+        "accuracy": 0.4586,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "roc_auc": 0.5504
+    }
+}
