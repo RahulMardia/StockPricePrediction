@@ -3,7 +3,7 @@
 A Python-based machine learning project that uses historical stock market data and technical indicators to predict the next trading day's stock price direction (UP or DOWN).
 
 The project downloads historical data, performs feature engineering, trains multiple machine learning models, compares their performance, and generates predictions using the best model selected during validation.
-
+ 
 ## Features
 
 - Historical stock data collection using Yahoo Finance.
