@@ -238,3 +238,9 @@ data/processed/
 
 # Remove this if no data is stored inside src/data
 # src/data/
+
+# Node & Frontend dependencies and builds
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.vite/

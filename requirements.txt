@@ -8,3 +8,5 @@ ta
 joblib
 matplotlib
 yfinance
+fastapi
+uvicorn

@@ -1,199 +1,138 @@
-# Stock Price Prediction Using Machine Learning
+# StockPulse AI - Stock Price Direction Predictor Web App
 
-A Python-based machine learning project that uses historical stock market data and technical indicators to predict the next trading day's stock price direction (UP or DOWN).
+A full-stack, machine learning-powered web application that uses historical stock market data and technical indicators to forecast the next trading day's stock price direction (**UP** or **DOWN**).
 
-The project downloads historical data, performs feature engineering, trains multiple machine learning models, compares their performance, and generates predictions using the best model selected during validation.
- 
-## Features
+The app features an interactive **React + TypeScript + Tailwind CSS** frontend with TradingView-style financial charts and a high-performance **FastAPI** backend supporting on-demand stock inference, technical indicator calculation, and automated model re-training.
 
-- Historical stock data collection using Yahoo Finance.
-- Data cleaning and preprocessing using Pandas and NumPy.
-- Technical indicator calculation:
-  - Simple Moving Average (SMA)
-  - Exponential Moving Average (EMA)
-  - Relative Strength Index (RSI)
-  - Moving Average Convergence Divergence (MACD)
-  - Bollinger Bands
-- Daily, 5-day, and 10-day return calculations.
-- Chronological training, validation, and test splits.
-- Comparison of multiple machine learning algorithms.
-- Model evaluation using classification metrics.
-- Model persistence using Joblib.
-- Stock direction prediction using the latest available historical data.
+---
 
-## Machine Learning Models
+## 🌟 Key Features
 
-The project compares the following models:
+- **Live Market Data & Ticker Lookup**: Search and analyze any stock ticker (e.g. `AAPL`, `MSFT`, `NVDA`, `TSLA`, `GOOGL`, `AMZN`) via Yahoo Finance with local disk caching and offline fallback.
+- **Direction & Confidence Forecasting**: Predicts next-day direction with exact class probabilities (UP % vs DOWN %) and confidence ratings.
+- **Interactive Candlestick & Volume Charts**: Powered by TradingView's Lightweight Charts with overlay toggles for:
+  - 20-day & 50-day Simple Moving Averages (SMA)
+  - 20-day Exponential Moving Average (EMA)
+  - Bollinger Bands (20-day, 2 standard deviations)
+- **Deep Technical Indicator Analytics**: Real-time signal interpretation for:
+  - Relative Strength Index (RSI 14) with Overbought/Oversold zones
+  - Moving Average Convergence Divergence (MACD, Signal, Histogram)
+  - Moving Average Trends (Bullish/Bearish crossover signals)
+  - Volatility Range Envelopes
+- **Machine Learning Benchmark & Studio**:
+  - Compares **Logistic Regression**, **Random Forest**, and **XGBoost** with chronological train/validation/test splits (70/15/15).
+  - Displays validation metrics: Accuracy, Precision, Recall, F1-Score, and ROC-AUC.
+  - Interactive **Train Models** studio modal to fit and benchmark models dynamically on any ticker.
 
-1. **Logistic Regression** — Baseline classification model.
-2. **Random Forest** — Ensemble learning model.
-3. **XGBoost** — Gradient boosting classifier.
+---
 
-The best model is selected using validation performance and saved for future predictions.
-
-## Tech Stack
-
-- Python
-- Pandas
-- NumPy
-- Scikit-learn
-- XGBoost
-- Yahoo Finance (`yfinance`)
-- Technical Analysis Library (`ta`)
-- Joblib
-- Matplotlib
-
-## Project Structure
+## 🏗 Architecture & Tech Stack
 
 ```text
 StockPricePrediction/
+├── backend/
+│   ├── app.py                     # FastAPI application & API endpoints
+│   ├── schemas.py                 # Pydantic request & response models
+│   └── services/
+│       ├── stock_service.py       # Data retrieval & 17 technical indicators (ta)
+│       └── ml_service.py          # ML inference, pipeline evaluation & training
 │
-├── data/
-│   ├── raw/
-│   │   └── aapl.csv
-│   └── processed/
-│       └── aapl_features.csv
+├── frontend/
+│   ├── src/
+│   │   ├── components/            # UI components (Chart, Prediction, Overview, etc.)
+│   │   ├── services/api.ts        # Typed API client
+│   │   ├── types.ts               # Shared TypeScript interfaces
+│   │   ├── App.tsx                # Main dashboard view
+│   │   └── index.css              # Custom styling & Tailwind directives
+│   ├── dist/                      # Pre-built production bundle served by FastAPI
+│   ├── package.json
+│   └── vite.config.ts
 │
-├── models/
+├── models/                        # Persisted joblib model artifacts
 │   └── best_model.pkl
-│
-├── reports/
-│   ├── metrics.json
-│   └── confusion_matrix.png
-│
-├── src/
-│   ├── download_historical_data.py
-│   ├── feature_engineering.py
-│   ├── train.py
-│   ├── evaluate.py
-│   └── predict.py
-│
-├── requirements.txt
-├── README.md
-└── .gitignore
+├── reports/                       # Validation & benchmark metrics
+│   └── metrics.json
+├── data/                          # Raw & processed historical datasets
+├── run_app.py                     # One-click launcher script
+└── requirements.txt
 ```
 
-The generated model, dataset, and report files appear after running the relevant scripts.
+### Technologies
 
-## Installation
+- **Backend**: Python 3.12, FastAPI, Uvicorn, Scikit-learn, XGBoost, Pandas, NumPy, TA (Technical Analysis library), YFinance, Joblib.
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Lucide React, TradingView Lightweight Charts.
 
-### 1. Clone the repository
+---
 
-```bash
-git clone <your-repository-url>
-cd StockPricePrediction
-```
+## 🚀 Getting Started
 
-### 2. Create a virtual environment
+### 1. Prerequisites
 
-```bash
-python -m venv venv
-```
+Ensure you have Python 3.10+ and Node.js 18+ installed on your system.
 
-### 3. Activate the virtual environment
+### 2. Environment Setup
 
-Windows PowerShell:
+Activate your Python virtual environment:
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
-Windows Command Prompt:
-
-```cmd
-venv\Scripts\activate.bat
-```
-
-### 4. Install dependencies
+Install backend dependencies:
 
 ```bash
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
-## Usage
+---
 
-Run the following commands from the project root directory.
+## 🏃 Running the Application
 
-### Step 1: Download historical stock data
+### Option A: One-Click Run (Serves Backend & Built Frontend)
+
+Run the Python launcher script:
 
 ```bash
-python src/download_historical_data.py
+python run_app.py
 ```
 
-The default stock is Apple (`AAPL`). The downloaded data is saved to `data/raw/aapl.csv`.
+- **Web App**: [http://localhost:8000](http://localhost:8000)
+- **Interactive Swagger API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Health Check**: [http://localhost:8000/api/health](http://localhost:8000/api/health)
 
-### Step 2: Train and compare models
+---
 
-```bash
-python src/train.py
-```
+### Option B: Development Mode (Hot Reloading)
 
-This step generates technical indicators, creates the target variable, splits the data chronologically, trains the models, evaluates validation performance, and saves the selected model.
+If you are developing the frontend and backend simultaneously:
 
-Generated files include:
+1. **Start the FastAPI backend** in one terminal:
+   ```bash
+   python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000 --reload
+   ```
 
-- `data/processed/aapl_features.csv`
-- `models/best_model.pkl`
-- `reports/metrics.json`
+2. **Start the Vite frontend dev server** in another terminal:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   Open [http://localhost:5173](http://localhost:5173). Vite will automatically proxy API requests to port 8000.
 
-### Step 3: Evaluate model performance
+---
 
-```bash
-python src/evaluate.py
-```
+## 📡 API Endpoints Reference
 
-This displays the validation and test metrics saved during training.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/health` | Health check endpoint. |
+| `GET` | `/api/stock/{symbol}` | Full analysis payload (Quote, Prediction, Indicators, History, Model Metrics). |
+| `GET` | `/api/stock/{symbol}/prediction` | Next-day direction (UP/DOWN) and class probability scores. |
+| `GET` | `/api/stock/{symbol}/history` | Historical candlestick data with technical indicator overlays. |
+| `GET` | `/api/models/metrics?ticker=AAPL` | Validation and test benchmark metrics for all algorithms. |
+| `POST` | `/api/models/train` | Triggers on-demand training of models for any stock ticker. |
 
-### Step 4: Generate a prediction
+---
 
-```bash
-python src/predict.py
-```
+## ⚠️ Disclaimer
 
-The script loads the saved model and predicts whether the next trading day's closing price will be higher or lower than the latest available closing price.
-
-## Target Variable
-
-The model uses a binary classification target:
-
-- `1` — The next trading day's closing price is higher than today's closing price.
-- `0` — The next trading day's closing price is equal to or lower than today's closing price.
-
-## Evaluation Metrics
-
-The models are evaluated using:
-
-- **Accuracy:** Overall proportion of correct predictions.
-- **Precision:** Proportion of predicted UP days that were actually UP.
-- **Recall:** Proportion of actual UP days correctly identified.
-- **F1-score:** Harmonic mean of precision and recall.
-- **ROC-AUC:** Measures the model's ability to distinguish between the two classes.
-
-The project uses chronological data splits to reduce the risk of future information leaking into model training.
-
-## Limitations
-
-- Historical price patterns do not guarantee future price movements.
-- Model performance can change across different market conditions.
-- Classification probabilities may not represent calibrated real-world probabilities.
-- Yahoo Finance data is used for historical research and is not a guaranteed real-time trading feed.
-- The current implementation predicts price direction rather than an exact future price.
-- The model has not been established as a profitable trading strategy.
-
-## Future Improvements
-
-- Add additional stocks and configurable ticker selection.
-- Improve feature engineering and model selection.
-- Implement walk-forward validation.
-- Add probability calibration and baseline comparisons.
-- Integrate a real-time market data API.
-- Develop an interactive dashboard using Streamlit.
-- Track prediction performance over time.
-
-## Disclaimer
-
-This project is intended for educational and research purposes only. Its predictions are experimental and should not be treated as financial advice or guaranteed trading signals.
-
-## Author
-
-Developed as a machine learning project to explore historical stock data analysis, technical indicators, and predictive modeling.
+This application is built for research, educational, and informational purposes only. The predictions generated by the machine learning models reflect statistical pattern analysis of historical data and do not constitute financial advice or guaranteed trading signals.
