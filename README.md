@@ -3,7 +3,7 @@
 A full-stack, machine learning-powered web application that uses historical stock market data and technical indicators to forecast the next trading day's stock price direction (**UP** or **DOWN**).
 
 The app features an interactive **React + TypeScript + Tailwind CSS** frontend with TradingView-style financial charts and a high-performance **FastAPI** backend supporting on-demand stock inference, technical indicator calculation, and automated model re-training.
-
+ 
 ---
 
 ## 🌟 Key Features
