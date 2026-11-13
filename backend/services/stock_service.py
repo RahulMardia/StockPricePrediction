@@ -34,12 +34,15 @@ FEATURE_COLUMNS = [
 
 
 def fetch_stock_raw_data(symbol: str, period: str = "2y") -> pd.DataFrame:
-    """Fetch daily OHLCV data from Yahoo Finance with local disk cache and fallback."""
+    """Fetch daily OHLCV data from Yahoo Finance with local disk cache and seed fallback."""
     import os
     symbol_clean = symbol.upper().strip()
     cache_path = os.path.join("data", "raw", f"{symbol_clean.lower()}.csv")
+    seed_path = os.path.join("data", "seeds", f"{symbol_clean.lower()}.csv")
+    fallback_aapl = os.path.join("data", "seeds", "aapl.csv")
     df = pd.DataFrame()
 
+    # Strategy 1: yf.Ticker history
     try:
         ticker = yf.Ticker(symbol_clean)
         df = ticker.history(period=period, interval="1d", auto_adjust=True)
@@ -53,16 +56,42 @@ def fetch_stock_raw_data(symbol: str, period: str = "2y") -> pd.DataFrame:
                 except Exception:
                     continue
     except Exception as e:
-        print(f"Online fetch warning for {symbol_clean}: {e}")
+        print(f"yfinance ticker history warning for {symbol_clean}: {e}")
 
-    # Fall back to local cached CSV if yfinance returned empty or failed
+    # Strategy 2: yf.download fallback
+    if df.empty:
+        try:
+            print(f"Attempting yf.download for {symbol_clean}...")
+            df = yf.download(symbol_clean, period=period, auto_adjust=True, progress=False)
+            if isinstance(df.columns, pd.MultiIndex):
+                # Flatten multi-index columns if returned
+                df.columns = [c[0] if isinstance(c, tuple) else c for c in df.columns]
+        except Exception as e:
+            print(f"yf.download warning for {symbol_clean}: {e}")
+
+    # Strategy 3: Local cached raw file
     if df.empty and os.path.exists(cache_path):
         print(f"Loading cached stock data from {cache_path}")
         df = pd.read_csv(cache_path)
         if "Unnamed: 0" in df.columns:
             df = df.drop(columns=["Unnamed: 0"])
-    elif not df.empty:
-        # Cache to data/raw for future fallback
+
+    # Strategy 4: Packaged seed file
+    if df.empty and os.path.exists(seed_path):
+        print(f"Loading seed stock data from {seed_path}")
+        df = pd.read_csv(seed_path)
+        if "Unnamed: 0" in df.columns:
+            df = df.drop(columns=["Unnamed: 0"])
+
+    # Strategy 5: Default fallback to AAPL seed if all else fails
+    if df.empty and os.path.exists(fallback_aapl):
+        print(f"Using default seed data from {fallback_aapl}")
+        df = pd.read_csv(fallback_aapl)
+        if "Unnamed: 0" in df.columns:
+            df = df.drop(columns=["Unnamed: 0"])
+
+    # Cache successful online fetch
+    if not df.empty and not os.path.exists(cache_path):
         os.makedirs(os.path.join("data", "raw"), exist_ok=True)
         try:
             df.to_csv(cache_path)

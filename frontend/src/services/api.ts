@@ -1,14 +1,33 @@
 import { StockAnalysisResponse, ModelMetricsResponse, TrainResponse } from '../types';
 
-const API_BASE = '/api';
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
+const API_BASE = `${BACKEND_URL}/api`;
 
 export async function fetchStockAnalysis(symbol: string): Promise<StockAnalysisResponse> {
-  const res = await fetch(`${API_BASE}/stock/${encodeURIComponent(symbol.trim().toUpperCase())}`);
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({ detail: 'Failed to fetch stock data' }));
-    throw new Error(errorData.detail || `Server error: ${res.status}`);
+  const url = `${API_BASE}/stock/${encodeURIComponent(symbol.trim().toUpperCase())}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      let detail = `Server error (${res.status})`;
+      try {
+        const errorData = await res.json();
+        detail = errorData.detail || detail;
+      } catch {
+        if (res.status === 502 || res.status === 503 || res.status === 504) {
+          detail = 'Render backend is waking up (cold start takes ~30-50s). Please wait 30 seconds and click Retry.';
+        }
+      }
+      throw new Error(detail);
+    }
+    return res.json();
+  } catch (err: any) {
+    if (err.message && !err.message.toLowerCase().includes('failed to fetch')) {
+      throw err;
+    }
+    throw new Error(
+      `Cannot connect to backend (${BACKEND_URL || 'local server'}). If on Render, the free instance may be waking up (takes ~30-50s) or check VITE_BACKEND_URL. Click Retry in a moment.`
+    );
   }
-  return res.json();
 }
 
 export async function fetchModelMetrics(symbol: string = 'AAPL'): Promise<ModelMetricsResponse> {
